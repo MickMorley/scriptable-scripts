@@ -1,4 +1,11 @@
-hass.js
+//  Home Assistant Lockscreen Widget
+
+// Confguration
+// EDIT HERE
+ 
+const hassUrl = "<hass base url>"
+const hassToken = "<your long lived Bearer token>"
+
 let widget = await createWidget();
 if (!config.runsInWidget) {
     await widget.presentSmall();
@@ -8,14 +15,11 @@ Script.setWidget(widget);
 Script.complete();
 
 async function createWidget(items) {
-
-    /* Get data from API */
-    const tempImg = await getImage('temperature.png');
-    const humidImg = await getImage('humidity.png');
-    const logoImg = await getImage('hass-favicon.png');
-
-    let req = new Request("https://<HASS IP>/api/states")
-    req.headers = { "Authorization": "Bearer YOUR KEY", "content-type": "application/json" }
+    let req = new Request(`${hassUrl}/api/states`)
+    req.headers = { 
+        "Authorization": `Bearer ${hassToken}`, 
+        "content-type": "application/json" 
+    }
     let json = await req.loadJSON();
  
     /* Parse data received from API */
