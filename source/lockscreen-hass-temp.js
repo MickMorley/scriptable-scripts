@@ -1,4 +1,6 @@
 //  Home Assistant Lockscreen Widget
+//  Details
+//  - Used on lockscreen to show 2 temperature sensors
 
 // Confguration
 // EDIT HERE
@@ -8,7 +10,8 @@ const hassToken = "<your long lived Bearer token>"
 
 let widget = await createWidget();
 if (!config.runsInWidget) {
-    await widget.presentSmall();
+    // await widget.presentSmall();
+    await widget.presentMedium();
 }
 
 Script.setWidget(widget);
@@ -25,7 +28,11 @@ async function createWidget(items) {
     /* Parse data received from API */
     let data = {livingroom: {}}
  
-    data.livingroom = addData(json, data.livingroom, ['sensor.living_room_temperature', 'sensor.living_room_humidity']);
+    data.livingroom = addData(json, data.livingroom, [
+        'sensor.boiler_temp'
+        ,'sensor.storage_temp'
+        ,'binary_sensor.blower'
+    ]);
  
     /* Create the widget */
     const widget = new ListWidget();
@@ -40,7 +47,7 @@ async function createWidget(items) {
     labelStack.setPadding(0, 0, 0, 0);
     labelStack.borderWidth = 0;
     labelStack.size = new Size(50,50);
-    addLabel(labelStack, "🛋️")
+    addLabel(labelStack, "🔥")
  
     /* Second, the temperature column */
     const tempStack = bodyStack.addStack();
@@ -54,15 +61,15 @@ async function createWidget(items) {
     addTemp(tempStack, data.livingroom)
  
     /* Third, the humidity column */
-    const humidStack = bodyStack.addStack();
-    humidStack.centerAlignContent();
-    humidStack.setPadding(0, 5, 0, 0);
-    humidStack.borderWidth = 0;
-    humidStack.size = new Size(0,50);
-    humidStack.layoutVertically();
+    const storageStack = bodyStack.addStack();
+    storageStack.centerAlignContent();
+    storageStack.setPadding(0, 5, 0, 0);
+    storageStack.borderWidth = 0;
+    storageStack.size = new Size(0,50);
+    storageStack.layoutVertically();
  
-    humidStack.addText("💧")
-    addHumid(humidStack, data.livingroom)
+    storageStack.addText("💧")
+    addStorage(storageStack, data.livingroom)
  
     /* Done: Widget is now ready to be displayed */
     return widget;
@@ -77,14 +84,14 @@ async function addLabel(labelStack, label) {
  
 /* Adds the entries to the temperature column */
 async function addTemp(tempStack, data) {
-    const mytext = tempStack.addText(data.temp + "°C");
+    const mytext = tempStack.addText(data.temp + "°F");
     mytext.font = Font.heavyMonospacedSystemFont(13);
     mytext.textColor = Color.white();
 }
  
 /* Adds the entries to the humidity column */
-async function addHumid(humidStack, data) {
-    const mytext = humidStack.addText(data.humid + "%");
+async function addStorage(storageStack, data) {
+    const mytext = storageStack.addText(data.humid + "°F");
     mytext.font = Font.mediumMonospacedSystemFont(13);
     mytext.textColor = Color.white();
     mytext.textOpacity = 0.8;
